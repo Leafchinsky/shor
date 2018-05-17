@@ -1,29 +1,15 @@
 #!/usr/bin/env python
 
-"""shors.py: Shor's algorithm for quantum integer factorization"""
 
 import math
 import random
 import argparse
 
-__author__ = "Todd Wildey"
-__copyright__ = "Copyright 2013"
-__credits__ = ["Todd Wildey"]
-
-__license__ = "MIT"
-__version__ = "1.0.0"
-__maintainer__ = "Todd Wildey"
-__email__ = "toddwildey@gmail.com"
-__status__ = "Prototype"
-
-
 def printNone(str):
     pass
 
-
 def printVerbose(str):
     print(str)
-
 
 printInfo = printNone
 
@@ -476,16 +462,16 @@ def parseArgs():
 
 
 def main():
-    args = parseArgs()
+    '''args = parseArgs()
 
     global printInfo
     if args.verbose:
         printInfo = printVerbose
-    else:
-        printInfo = printNone
+    else:'''
+    printInfo = printNone
 
-    #factors = shors(15, 20,  0.01, 2)
-    factors = shors(args)
+    factors = shors(35, 1,  0.01, 2)
+    #factors = shors(args)
     if factors is not None:
         print("Factors:\t" + str(factors[0]) + ", " + str(factors[1]))
 
