@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-
-
+import cmath
 import math
 import random
 import argparse
+import matplotlib.pyplot as plt
 
 def printNone(str):
-    pass
+    print(str)
 
 def printVerbose(str):
     print(str)
@@ -16,7 +16,7 @@ printInfo = printNone
 
 ####################################################################################################
 #                                                                                                   
-#                                        Quantum Components                                         
+#                                        Квантовая часть
 #                                                                                                   
 ####################################################################################################
 
@@ -80,7 +80,7 @@ class QubitRegister:
             register.propagate(self)
 
     # Map will convert any mapping to a unitary tensor given each element v
-    # returned by the mapping has the property v * v.conjugate() = 1
+    #     # returned by the mapping has the property v * v.conjugate() = 1
     #
     def map(self, toRegister, mapping, propagate=True):
         self.entangled.append(toRegister)
@@ -165,7 +165,7 @@ class QubitRegister:
     def amplitudes(self):
         amplitudes = []
         for state in self.states:
-            amplitudes.append(state.amplitude)
+            amplitudes.append((state.amplitude.real)**2+(state.amplitude.imag)**2)
 
         return amplitudes
 
@@ -216,8 +216,8 @@ def findPeriod(a, N):
     inputNumBits += 1 if ((1 << inputNumBits) < (N * N)) else 0
     Q = 1 << inputNumBits
 
-    printInfo("Finding the period...")
-    printInfo("Q = " + str(Q) + "\ta = " + str(a))
+    printInfo("Поиск периода...")
+    printInfo("Q (2^m) = " + str(Q) + "\ta = " + str(a))
 
     inputRegister = QubitRegister(inputNumBits)
     hmdInputRegister = QubitRegister(inputNumBits)
@@ -256,6 +256,13 @@ def findPeriod(a, N):
 
     printInfo("Performing a measurement on the periodicity register")
 
+    tmp1 = hmdInputRegister.amplitudes()
+    plt.plot(tmp1)
+    plt.show()
+    tmp2 = qftInputRegister.amplitudes()
+    plt.plot(tmp2)
+    plt.show()
+
     x = qftInputRegister.measure()
 
     printInfo("QFT register measured\tx = " + str(x))
@@ -274,7 +281,7 @@ def findPeriod(a, N):
 
 ####################################################################################################
 #                                                                                                   
-#                                       Classical Components                                        
+#                                       Классическая часть
 #                                                                                                   
 ####################################################################################################
 
@@ -386,20 +393,21 @@ def shors(N, attempts=1, neighborhood=0.0, numPeriods=1):
     periods = []
     neighborhood = math.floor(N * neighborhood) + 1
 
-    printInfo("N = " + str(N))
-    printInfo("Neighborhood = " + str(neighborhood))
+    printInfo("Число для факторизации = " + str(N))
+    printInfo("Окрестность = " + str(neighborhood))
     printInfo("Number of periods = " + str(numPeriods))
 
     for attempt in range(attempts):
-        printInfo("\nAttempt #" + str(attempt))
+        printInfo("\nПопытка #" + str(attempt))
 
         a = pick(N)
-        while a < 2:
+        while a <= 2:
             a = pick(N)
+        # a = 2
 
         d = gcd(a, N)
         if d > 1:
-            printInfo("Found factors classically, re-attempt")
+            printInfo("Поиск множителей классическим алгоритмом") ##квантовый параллелизм
             continue
 
         r = findPeriod(a, N)
@@ -470,7 +478,7 @@ def main():
     else:'''
     printInfo = printNone
 
-    factors = shors(35, 1,  0.01, 2)
+    factors = shors(35, 15,  0.01, 2)
     #factors = shors(args)
     if factors is not None:
         print("Factors:\t" + str(factors[0]) + ", " + str(factors[1]))
